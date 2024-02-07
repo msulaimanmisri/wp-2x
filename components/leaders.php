@@ -1,56 +1,60 @@
 <?php
-$staffList = [];
+$getExpertPostType = [
+    'post_type' => 'expert',
+    'post_status' => 'publish',
+    'orderby' => 'post_date',
+    'order'  => 'ASC'
+];
+$query = new WP_Query($getExpertPostType);
 
 /**
- * Create a Staff Object
+ * Stop the WP loop
  */
-$staffOne = new stdClass();
-$staffTwo = new stdClass();
-$staffThree = new stdClass();
-$staffFour = new stdClass();
-
-/**
- * Add data to the staff
- */
-$staffOne->name = 'Jean-Louis';
-$staffOne->image = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
-$staffOne->position = 'managing-director';
-$staffOne->location = 'asia-pasific';
-$staffList[] = $staffOne;
-
-$staffTwo->name = 'Sylvaine Masson';
-$staffTwo->image = 'https://images.unsplash.com/photo-1548142813-c348350df52b?q=80&w=1289&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
-$staffTwo->position = 'director';
-$staffTwo->location = 'asia-pasific';
-$staffList[] = $staffTwo;
-
-$staffThree->name = 'Arum Nayak';
-$staffThree->image = 'https://images.unsplash.com/photo-1583123810408-23e7b5d1af9f?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
-$staffThree->position = 'director';
-$staffThree->location = 'asia-pasific';
-$staffList[] = $staffThree;
-
-$staffFour->name = 'Xia Moa';
-$staffFour->image = 'https://images.unsplash.com/photo-1628258473666-9d3149c1da55?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
-$staffFour->position = 'vice-president';
-$staffFour->location = 'asia-pasific';
-$staffList[] = $staffFour;
+wp_reset_postdata();
 ?>
 
 <div class="row">
-    <?php foreach ($staffList as $key => $staff): ?>
-    <div class="col text-center gap-3">
-        <a href=""
-            class="text-decoration-none text-dark">
-            <img src="<?php echo $staff->image; ?>"
-                alt="<?php echo $staff->name; ?>"
-                class="rounded-circle"
-                style="height: 210px; width: 200px;">
+    <?php while ($query->have_posts()) : ?>
+    <?php $query->the_post(); ?>
+    <?php $expertName = get_the_title(); ?>
+    <?php $position = get_post_meta(get_the_ID(), 'position', true); ?>
+    <?php $location = get_post_meta(get_the_ID(), 'location', true); ?>
 
-            <h4 class="mt-4"><?php echo $staff->name; ?></h4>
-            <p class="mt-2"><?php echo ucwords(str_replace('-', ' ', $staff->position)); ?></p>
-            <p class="mt-2 fst-italic"><?php echo ucwords(str_replace('-', ' ', $staff->location)); ?></p>
+    <!-- Image -->
+    <?php $getImage = get_post_meta(get_the_ID(), 'profile_image', true); ?>
+    <?php $imageUrl = wp_get_attachment_image_url($getImage, 'full'); ?>
+
+    <!-- Social Media -->
+    <?php $linkedIn = get_post_meta(get_the_ID(), 'linkedin', true); ?>
+    <?php $phoneNumber = get_post_meta(get_the_ID(), 'contact_no', true); ?>
+    <?php $email = get_post_meta(get_the_ID(), 'email', true); ?>
+
+    <div class="col-6 col-md-3 p-5 text-center expert-col" data-name="<?php echo strtolower($expertName); ?>"
+        data-position="<?php echo strtolower(str_replace(' ', '-', $expertName)); ?>"
+        data-location="<?php echo implode(', ', $location); ?>">
+
+        <a href="<?php echo "/team/" . strtolower(str_replace(' ', '-', $expertName)); ?>"
+            class="text-decoration-none text-dark">
+            <img src="<?php echo $imageUrl; ?>" class="leader-img" alt="">
+            <h3 class="my-3"><?php echo $expertName; ?></h3>
+            <p class="my-3"><?php echo $position; ?></p>
+
+            <div class="px-2 text-center">
+                <div class="card-footer social ">
+                    <a href="mailto:<?php echo $email; ?>" class="text-decoration-none text-dark">
+                        <i class="fa fa-envelope"></i>
+                    </a>
+
+                    <a href="tel:<?php echo $phoneNumber; ?>" class="text-decoration-none text-dark">
+                        <i class="fa fa-phone"></i>
+                    </a>
+
+                    <a href="<?php echo $linkedIn; ?>" class="text-decoration-none text-dark">
+                        <i class="fa fa-linkedin"></i>
+                    </a>
+                </div>
+            </div>
         </a>
     </div>
-    <?php endforeach;?>
+    <?php endwhile; ?>
 </div>

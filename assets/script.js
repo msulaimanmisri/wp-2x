@@ -1,13 +1,22 @@
 $(document).ready(function () {
-  var $searchInput = $('input[type="search"]');
-  var $icon = $('<i class="fa-search"></i>');
-  $searchInput.after($icon);
+  // For searching
+  var searchInput = document.getElementById('search');
+  var expertCols = document.querySelectorAll('.expert-col');
 
-  $searchInput.on("input", function () {
-    if ($(this).val() !== "") {
-      $icon.addClass("active");
-    } else {
-      $icon.removeClass("active");
-    }
-  });
+  searchInput.addEventListener('input', () => {
+    var searchValue = this.value;
+    expertCols.forEach(function (expertCol) {
+      var expertName = expertCol.dataset.name;
+      if (expertName.indexOf(searchValue) === -1) {
+        expertCol.style.display = 'none';
+      } else {
+        expertCol.style.display = 'block';
+      }
+    });
+  })
+
+  // Back Button
+  $('#actAsBackButton').click(function () {
+    window.location.href = '/';
+  })
 });
